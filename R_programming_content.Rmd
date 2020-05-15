@@ -1,0 +1,68 @@
+---
+title: "R_prgramming"
+author: "Yue"
+date: "15/05/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Object
+
+    R has 5 basic atomic class of objects: 
+
+-  character
+-  numeric : 1 , Inf(Infinity) , NaN( undefined number, e.g. 0/0)
+-  integer : 1L
+-  complex
+-  logical(True or False)
+ 
+ 
+    The most basic object is a vector:
+    
+-  A vector only contain objects of the same class
+-  Exception : *list* which represented as a vector but can contain different classes.
+
+    Empty vector can be created with vector() fun function,
+    
+## Attibutes 
+
+-  names, dimmanes
+-  dimensions ( num of rows and num of columns)
+-  class
+-  length
+-  other user-defined attributes
+
+can be accessed using attributes() function
+
+
+## Creating Vectors
+
+using the c() function
+```{}
+x<-c(0.5, 0.6)    ## numeric
+x<-c(TRUE,FALSE)  ## logical
+x<-c(T,F)         ## logical
+x<-c("a","b","c") ## character
+x<- 9;29          ## integer
+x<-c(1+0i,2+4i)   ## complex
+
+```
+
+
+Using the vector() function
+```{}
+x<-vector("numeric", length=10)
+x
+```
+
+When different objects are mixed in a vector, *coercion* occurs so that every element in the vector is of the same class( usually the least common one)
+```{r}
+y<-c(1.7,"a")    ## character
+y<-c(TRUE,2)     ## numeric
+
+```
+
+
