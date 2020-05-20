@@ -62,7 +62,429 @@ When different objects are mixed in a vector, *coercion* occurs so that every el
 ```{r}
 y<-c(1.7,"a")    ## character
 y<-c(TRUE,2)     ## numeric
+class(y)
+```
+
+## Explicit Coercion
+using as.* function to coerce obejects from one to another
+```{r}
+x<-0:6
+class(x)
+
+y<-4
+class(y)
+```
+
+```{r}
+as.numeric(x)
+```
+```{r}
+as.logical(x)
+```
+```{r}
+as.character(x)
+```
+```{r}
+x<-c("a","b","c")
+as.numeric(x)
+
+## when it doesn't work, you will get a vector of NAs
+```
+
+## List
+```{r}
+x<- list(1,"a", TRUE, 1+4i)
+x
+```
+
+## Matrices
+matrices are vectors with *dimension* attribute. The dimension attribute itself an integer vectro of length 2 (row, column)
+```{r}
+m<-matrix(nrow = 2 , ncol = 3)
+m
+```
+
+```{r}
+dim(m)  
+## row column
+```
+
+```{r}
+attributes(m)  ## the attributes function of m
+```
+
+### Creating matrices
+
+
+-  Matrics are constructed *cloumnwise* ,  so entries can be thought of starting in the upper left corner and running down the columns
+```{r}
+m<-matrix(1:6, nrow = 2, ncol = 3)
+m
+```
+-  Alternatively, matrices can be created directly from vectors by adding a dimention attributes
+```{r}
+m<-1:10
+m
+```
+
+
+```{r}
+dim(m) <- c(2,5)
+m
+```
+
+- Third way, column-binding and row- binding with cbind() and rbind()
+```{r}
+x<- 1:3
+y<- 10:12
+```
+
+```{r}
+cbind(x,y)
+```
+```{r}
+rbind(x,y)
+```
+
+
+## Factors 
+Factors are used to represent catogorical data. Factors can be unordered( male, female) or ordered( Assitant professor, associate professor, professor). One can think of a factor as an integer vector where each integer has a label
+
+-  factors are treated specially by modelling function like lm() and gls().
+
+-  Using factors with lavels is better than using integers because factors are self describing: having a variable that has values "Males" and "Females" is better than a variable that has value 1 and 2.
+
+```{r}
+x <- factor(c("yes","yes","no","no"))
+x
+```
+
+```{r}
+table(x) ## tell us the frequncy count of each level
+```
+```{r}
+unclass(x)
+## yes is coded as 2, and no is coded as 1
+
+```
+```{r}
+##attr(,"levels")
+```
+
+The order of levels can be set using levels argument to factor(). This is important in *linear modeling* since the first level(using alphabetical order) is used as the *baseline level*.
+```{r}
+
+## "no" will be the baseline level since no comes before yes in the alphabet
+x <- factor(c("yes","yes","no","no"),
+            levels = c("yes", "no"))
+## After using levels, the order of level will be reversed
+x
+```
+
+## Missing Values
+
+Missing values are denoted by NA( everything else ) or NaN (for undefined mathmarical operations)
+
+-  is.na() is used to test objects if they are NA
+-  is.nan() is used to test for NaN
+-  NA values have a class also, so there are integer NA, character NA, etc.
+-  A NaN value is also NA but the converse is not true
+
+```{r}
+x<- c(1,2, NA, 10,3)
+is.na(x)
+
+```
+```{r}
 
 ```
 
+```{r}
+is.nan(x)
+```
+
+```{r}
+x<-c(1,2, NaN, NA,4)
+is.na(x)
+is.nan(x)
+```
+
+## Data Frames
+
+Data frames are used to store tabular data
+-  Represented as a special type of list whrere each element(column) of the list has to have to same length
+-  Unlike matrices, data frame can store different classes of objects in each column
+-  Data frames can be created by calling read.table() or read.csv(), data.frame()
+-  can be converted to a matrix by calling data.matrix()
+
+
+```{r}
+x<- data.frame(foo=1:4, bar=c( T, T, F, F))
+x
+```
+```{r}
+nrow(x)
+ncol(x)
+```
+## Names
+```{r}
+x <- 1:3 
+names(x)
+```
+```{r}
+names(x) <-c("foo", "bar", "norf")
+x
+```
+```{r}
+names(x)
+```
+
+```{r}
+## assigning names to lists
+
+x<- list(a=1, b=2, c=3)
+x
+```
+
+```{r}
+## assigning names to matrices
+m <- matrix(1:4, nrow=2, ncol=2)
+dimnames(m) <- list (c("a","b"),c("c","d"))
+m
+```
+
+```{r}
+?read.table
+```
+
+
+## Reading data
+
+read.table  or   read.csv
+
+### Reading large table
+
+When we read large data set, we can use the colClasses argument to specify the class of each column instead of uising the default( let R figure out the class by itself) to make read.table MUCH faster. 
+
+If you have a huge data set, you can read in maybe the first 100 or first 1,000 rows. By specifying the nrows argument. And then going through each of the looping over each of the columns using sapply and calling the class function. So the class function will give you, will tell you what class of data is in each column. And then you can use this, and then you can save, store this information. And then read the entire data set after by specifying the call classes argument.
+```{r}
+#initial <- read.table("example.txt", nrows = 100)
+#classes <- aspply(initial, class)
+#tabAll <- read.table("example.txt", colClasses = classes)
+```
+
+
+### Textual Data formats
+
+dump() and dput() preserve the the metadata e.g. the class for each object
+
+```{r}
+y <- data.frame( a=1 , b="a")
+dput(y)
+# dput() takes an R object ( most types of R objects except for some more exotic ones) and  will create some R code that will reconstruct the object in R. 
+dput(y,file="y.R")
+new.y <- dget("y.R")
+# using dget to read it into R
+new.y
+```
+Multiple objects can be deparsed using the dump function and read back in using source.
+```{r}
+x <- "foo"
+y <- data.frame( a= 1, b="a")
+dump(c("x","y"), file = "data.R")
+rm(x,y)
+source("data.R")
+y
+x
+```
+### Interaces to the outside world
+
+Connections can be made to files or other things using *file*, *gzfile*, *bzfile*, *url*
+
+```{r}
+# Example : read lines of a text file
+#con <- gzfile("words.gz")
+#x <- readLines(con, 10)
+#x
+```
+
+## Extract *subsets* of R objects
+-  [](square bracket) used to select more than one element of the original objects, usually returns an object of the same class
+-  [[]] used to extract single element of a list or a data frame ( might not be the same class as the orginal one )
+-  $used to extract an element of a list or data frame by *name*, similar to [[]]
+
+```{r}
+x <- c("a","b","c","c","d","a")
+x[1]
+x[2]
+x[1:4]
+x[x>"a"]
+u<-x>"a"
+u
+
+```
+
+```{r}
+x <- list(foo=1:4, bar = 0.6)
+x[1]
+# this return a list 
+```
+
+```{r}
+x[[1]]
+# this code returns a vector
+```
+
+```{r}
+x$bar
+x[["bar"]]
+# these return a number
+
+x["bar"]
+# this rerutn a list
+```
+### Extract multiple element of lists
+```{r}
+x<-list(foo=1:4, bar=0.6, baz="Ross")
+x[c(1,3)]
+```
+
+-  [[ operator can be used with *computed* indices;$ can only be used with literal names
+```{r}
+x<-list(foo=1:4, bar=0.6, baz="Ross")
+name <- "foo"
+
+x[[name]]   ## computed index for 'foo'
+x$name      ## element 'name' doesn't exist
+x$foo      ## element 'foo' does exist    
+
+```
+
+```{r}
+x <-list(a=list(10,12,14), b=c(3.14,2.81))
+x[[c(1,3)]]   ## Extract the third element of the first element
+x[[1]][[3]]
+
+
+x[[c(2,1)]]
+```
+
+### Subsetting a Matrix
+
+```{r}
+x <-matrix(1:6, 2, 3)
+x[1,2]   ## first row, second column
+x[2,1]   ## second row, first column
+
+# Indices can also be missing 
+x[1,]    ## want the first row of the matrix
+x[,2]    ## want the second column of the matrix
+
+```
+-  subsetting a single element give us a vector of length 1 instead of a 1 by 1 matrix( by default)
+```{r}
+x<-matrix(1:6, 2,3)
+x[1,2]
+
+x[1,2, drop = FALSE]  ## turn off the behaviour by setting drop = FALSE
+
+```
+### Partial Matching
+
+```{r}
+x<-list(aardvark=1:5)
+
+x$a     ## by default is that it looks for a name in this list, that matches the letter a
+
+x[["a"]]   ## things are a little bit different when using the [[ operator
+
+x[["a", exact = FALSE]]
+
+```
+### Removing Missing Values
+
+-  One simple example
+```{r}
+x<- c(1,2,NA,4,NA,5)
+bad <-is.na(x)    ## This creat a logical vector
+bad
+x[!bad]
+```
+
+-  What if there are multiple things and you want to take the subset with no missing values ? Use complete.cases()
+-  complete.cases() also works for data frame
+```{r}
+x<- c(1,2,NA,4,NA,5)
+y<- c("a","b","c",NA,NA,"f")
+good<-complete.cases(x,y)
+good
+x[good]
+y[good]
+```
+
+
+## Vectorized Operations(Calculations)
+```{r}
+## All the simple calculation will be done in paralell
+x<- 1:4; y<- 6:9 
+x + y   ## add the two vectors together i.e. add the ith element of x to the ith element of y
+x>2
+x>=2
+y==8
+x*y
+x/y
+```
+```{r}
+x<- matrix(1:4, 2,2); y<-matrix(rep(10,4),2,2)
+x
+y
+x*y    ## element wise multiplication
+x/y
+
+x%*%y   ## true matrix multiplication
+```
+
+
+## Week 1 test
+```{r}
+x <- c(1,3, 5) 
+y <- c(3, 2, 10)
+z<-cbind(x, y)
+z
+class(z)
+```
+```{r}
+x <- list(2, "a", "b", TRUE)
+y<-x[[1]]
+y
+class(y)
+```
+
+```{r}
+x <- 1:4
+y <- 2:3
+x+y
+```
+
+```{r}
+#  set all elements of this vector that are less than 6 to be equal to zero
+x <- c(3, 5, 1, 10, 12, 6)
+x[x<6]<-0
+x
+```
+
+```{r}
+x <- c(3, 5, 1, 10, 12, 6)
+x[x %in% 1:5]<-0
+x
+```
+```{r}
+x <- c(3, 5, 1, 10, 12, 6)
+x[x<=5]<-0
+x
+```
+
+```{r}
+#read.table("hw1_data",header = TRUE)
+```
 
