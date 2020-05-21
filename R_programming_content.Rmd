@@ -356,7 +356,7 @@ name <- "foo"
 
 x[[name]]   ## computed index for 'foo'
 x$name      ## element 'name' doesn't exist
-x$foo      ## element 'foo' does exist    
+x$foo       ## element 'foo' does exist    
 
 ```
 
@@ -485,6 +485,56 @@ x
 ```
 
 ```{r}
-#read.table("hw1_data",header = TRUE)
+my_data <- read.csv( "hw1_data.csv", header=TRUE)
+my_data
+
+```
+
+```{r}
+## Extract the first 2 rows of the data and print them
+my_data[1:2,]
+
+head(my_data, n=2)
+```
+
+```{r}
+## Extract the last 2 rows of the data and print them
+tail(my_data, n=2)
+```
+
+```{r}
+## number of missing values in the Ozone column oOzone
+sum(is.na(my_data$"Ozone"))
+
+```
+```{r}
+## mean of Ozone column in the dataset
+bad <-is.na(my_data$"Ozone")    ## This creat a logical vector
+bad
+my_data$"Ozone"[!bad]
+mean(my_data$"Ozone"[!bad])
+```
+
+```{r}
+#Extract the subset of rows of the data frame where Ozone values are above 31 and Temp values are above 90. What is the mean of Solar.R in this subset?
+
+subset <- my_data[(my_data$"Ozone">31) & ( my_data$"Temp">90), ]
+
+good<-complete.cases(subset$"Solar.R")
+
+mean(subset$"Solar.R"[good])
+
+```
+```{r}
+#What is the mean of "Temp" when "Month" is equal to 6?
+condition1 <- my_data$"Month"==6
+condition2 <- complete.cases(my_data$"Temp")
+mean(my_data$"Temp"[(condition1)&(condition2)])
+```
+```{r}
+# What was the maximum ozone value in the month of May (i.e. Month is equal to 5)?
+condition3<-my_data$"Month"==5
+max(my_data$"Ozone"[condition3], na.rm = TRUE)
+
 ```
 
